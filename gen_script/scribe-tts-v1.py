@@ -14,29 +14,17 @@ def getPath(filename):
 
     if hasattr(sys, '_MEIPASS'):
         # PyInstaller >= 1.6
-        chdir(sys._MEIPASS)
+        # chdir(sys._MEIPASS)
         filename = join(sys._MEIPASS, filename)
-        # print("MEIPASS")
-        # print(filename)
     elif '_MEIPASS2' in environ:
         # PyInstaller < 1.6 (tested on 1.5 only)
-        chdir(environ['_MEIPASS2'])
+        # chdir(environ['_MEIPASS2'])
         filename = join(environ['_MEIPASS2'], filename)
-        # print("MEIPASS22")
-        # print(filename)
     else:        
         # chdir(dirname(sys.argv[0]))
         # filename = join(dirname(sys.argv[0]), filename)
         parent = os.path.dirname(os.path.abspath(__file__))
         filename = join(parent, filename)
-        # print("ELSE")
-        # print(filename)
-        
-    # print("dirname")
-    # print(os.path.dirname(os.path.realpath(__file__)))
-    # print("getCwd")
-    # cwd = os.getcwd()
-    # print(cwd)
 
     return filename
 
@@ -128,12 +116,13 @@ def addFFmpegPath():
         print(f"ffprobe not found at {ffprobe_path}")
         return
 
-    print(f"ffmpeg_path: {ffmpeg_path}")
-    print(f"ffprobe_path: {ffprobe_path}")
+    # debugging logs
+    # print(f"ffmpeg_path: {ffmpeg_path}")
+    # print(f"ffprobe_path: {ffprobe_path}")
 
     os.environ['PATH'] = os.path.dirname(ffmpeg_path) + os.pathsep + os.environ['PATH']
     os.environ['PATH'] = os.path.dirname(ffprobe_path) + os.pathsep + os.environ['PATH']
-    print("Updated PATH: ", os.environ['PATH'])
+    # print("Updated PATH: ", os.environ['PATH'])
 
     # Check permissions
     if not os.access(ffmpeg_path, os.X_OK):
@@ -152,6 +141,37 @@ def addFFmpegPath():
     # except Exception as e:
     #     print(f"Exception: {e}")
 
+def unzip_file(zip_path, extract_to):
+    import zipfile
+    extract_to = os.path.expanduser(extract_to)
+    
+    if not os.path.isfile(zip_path):
+        print(f"The file {zip_path} does not exist.")
+        return
+    
+    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+        zip_contents = zip_ref.namelist()
+
+        all_files_exist = all(os.path.exists(os.path.join(extract_to, member)) for member in zip_contents)
+        
+        if all_files_exist:
+            # print(f"All files already exist in {extract_to}. Skipping extraction.")
+            print("All files already exist. Skipping extraction.")
+        else:            
+            if not os.path.exists(extract_to):
+                os.makedirs(extract_to)
+            
+            zip_ref.extractall(extract_to)
+            # print(f"Extracted all files to {extract_to}")
+            print(f"Extracted all files.")
+
+def unzip_silero_vad():
+    from pathlib import Path
+    zip_file_path = getPath('silero-vad/snakers4_silero-vad_master.zip')
+    extraction_directory = str(Path.home() / '.cache/torch/hub')
+
+    unzip_file(zip_file_path, extraction_directory)
+
 if __name__ == '__main__':
     print("OpenVoice V1 TTS for LightWeave Scribe")
     multiprocessing.freeze_support()
@@ -164,4 +184,5 @@ if __name__ == '__main__':
     
     args = parser.parse_args()
     addFFmpegPath()
+    unzip_silero_vad()
     main(args)

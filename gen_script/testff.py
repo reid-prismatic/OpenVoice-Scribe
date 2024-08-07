@@ -2,6 +2,7 @@ import os
 import subprocess
 import argparse
 import multiprocessing
+import zipfile
 
 def getPath(filename):
     import sys
@@ -57,6 +58,47 @@ def addFFmpegPath():
     except Exception as e:
         print(f"Exception: {e}")
 
+
+def unzip_file_old(zip_path, extract_to):   
+    if not os.path.isfile(zip_path):
+        print(f"The file {zip_path} does not exist.")
+        return
+
+    if not os.path.exists(extract_to):
+        os.makedirs(extract_to)
+
+    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+        zip_ref.extractall(extract_to)
+        print(f"Extracted all files to {extract_to}")
+
+def unzip_file(zip_path, extract_to):
+    extract_to = os.path.expanduser(extract_to)
+    
+    if not os.path.isfile(zip_path):
+        print(f"The file {zip_path} does not exist.")
+        return
+    
+    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+        zip_contents = zip_ref.namelist()
+
+        all_files_exist = all(os.path.exists(os.path.join(extract_to, member)) for member in zip_contents)
+        
+        if all_files_exist:
+            print(f"All files already exist in {extract_to}. Skipping extraction.")
+        else:            
+            if not os.path.exists(extract_to):
+                os.makedirs(extract_to)
+            
+            zip_ref.extractall(extract_to)
+            print(f"Extracted all files to {extract_to}")
+
+def unzip_silero_vad():
+    from pathlib import Path
+    zip_file_path = getPath('silero-vad/snakers4_silero-vad_master.zip')
+    extraction_directory = str(Path.home() / '.cache/torch/testhub')
+
+    unzip_file(zip_file_path, extraction_directory)
+
 if __name__ == '__main__':
     multiprocessing.freeze_support()
 
@@ -66,4 +108,7 @@ if __name__ == '__main__':
     parser.add_argument('-t', '-i', '--text', type=str, help='Text to be converted to speech.')
     
     args = parser.parse_args()
-    addFFmpegPath()
+    # addFFmpegPath()    
+    unzip_silero_vad()
+
+    
