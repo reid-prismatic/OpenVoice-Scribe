@@ -17,6 +17,7 @@ a = Analysis(
         ('resources/demo_speaker0.mp3', 'resources'),        
         ('resources/demo_speaker1.mp3', 'resources'),
         ('resources/demo_speaker2.mp3', 'resources'),
+        ('resources/dv.mp3', 'resources'),
         ('silero-vad/snakers4_silero-vad_master.zip', 'silero-vad')
     ],
     hiddenimports=[
