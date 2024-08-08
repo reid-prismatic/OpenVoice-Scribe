@@ -7,6 +7,8 @@ import sys
 from os.path import join
 from os import environ
 
+VERSION = "0.1.0"
+
 REFERENCE_FILES = {
     0: 'demo_speaker0.mp3',
     1: 'demo_speaker1.mp3',
@@ -201,6 +203,7 @@ def validate_args(args):
 if __name__ == '__main__':
     print("----------------------------------------")
     print("OpenVoice V1 TTS for LightWeave Scribe")
+    print(f"Version: {VERSION}")    
     print("----------------------------------------")
     multiprocessing.freeze_support()
 
@@ -217,7 +220,7 @@ if __name__ == '__main__':
         validate_args(args)
     except ValueError as e:                
         parser.print_help()
-        print("\nExample usage:\n> scribe_tts_v1 -t 'Hello, this is a test.' [-r path/to/reference_speaker.mp3] [-o path/to/output.wav] [--default-ref-index 1]")
+        print("\nExample usage:\n> scribe_tts -t 'Hello, this is a test.' [-r path/to/reference_speaker.mp3] [-o path/to/output.wav] [--default-ref-index 1]")
         print(f"\nError: {e}")
         sys.exit(1)
     
