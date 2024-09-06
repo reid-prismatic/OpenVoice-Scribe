@@ -1,0 +1,1 @@
+I copied unidic from '/Users/reid/miniconda3/envs/openvoice-v2/lib/python3.9/site-packages/unidic'
